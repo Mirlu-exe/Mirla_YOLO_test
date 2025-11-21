@@ -9,4 +9,4 @@ val_label_dir: labels/train
 
 #classes
 names:
-  0: Elephant
+  0: elephant
