@@ -6,8 +6,13 @@ import time
 # --- Configuration ---
 # Set the directory containing the videos you want to process.
 # If you leave this as '.', it will use the same directory the script is run from.
-SOURCE_DIR = pathlib.Path('/home/nishiyamalab/PycharmProjects/Mirla_YOLO_test/unseen_videos/Comparision Video results')
+SOURCE_DIR = pathlib.Path('/home/nishiyamalab/PycharmProjects/Mirla_YOLO_test/Mirla_YOLO_test_videos/unseen_videos/GroupExample')
+
+##common ones
 """'/home/nishiyamalab/Videos/pinnawala_sample_videos'"""
+""'/home/nishiyamalab/PycharmProjects/Mirla_YOLO_test/Mirla_YOLO_test_videos/pinnawala_sample_videos/val_videos'""
+""'/home/nishiyamalab/PycharmProjects/Mirla_YOLO_test/unseen_videos/Comparision Video results'""
+
 OUTPUT_SUFFIX = "_h264.mp4"
 # A list of video extensions to look for.
 VIDEO_EXTENSIONS = ['.MP4', '.mov', '.mkv', '.avi', '.webm', '.flv', '.ts', '.mp4']

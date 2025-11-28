@@ -5,7 +5,7 @@ val: images/train
 
 # Directories
 train_label_dir: labels/train
-val_label_dir: labels/train
+val_label_dir: labels/val
 
 #classes
 names:
