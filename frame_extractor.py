@@ -7,10 +7,11 @@ import numpy as np
 from sklearn.cluster import MiniBatchKMeans
 from tqdm import tqdm
 
+## terminal command:
 """
 python /home/nishiyamalab/PycharmProjects/Mirla_YOLO_test/frame_extractor.py \
-  --input_dir "/home/nishiyamalab/Videos/pinnawala_sample_videos" \
-  --output_dir "/home/nishiyamalab/Videos/extracted_frames_pinnawala_sample_videos" \
+  --input_dir "/home/nishiyamalab/PycharmProjects/Mirla_YOLO_test/Mirla_YOLO_test_videos/pinnawala_sample_videos/val_videos" \
+  --output_dir "/home/nishiyamalab/PycharmProjects/Mirla_YOLO_test/Mirla_YOLO_test_videos/pinnawala_sample_videos/val_videos/extracted_frames_pinnawala_val_videos" \
   --clusters 12 \
   --sample_every 10 \
   --batch_size 512 \

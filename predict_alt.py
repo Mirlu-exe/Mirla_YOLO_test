@@ -22,12 +22,12 @@ from tqdm import tqdm
 # -----------------------------
 # Config (tune these)
 # -----------------------------
-VIDEOS_DIR = Path('./Mirla_YOLO_test_videos/unseen_videos/Target')
-INPUT_VIDEO = VIDEOS_DIR / '0820_8.30session_site2_1_h264.mp4'
+VIDEOS_DIR = Path('./Mirla_YOLO_test_videos/unseen_videos/GroupExample')
+INPUT_VIDEO = VIDEOS_DIR / '250825_10session_site1_1.MP4' #name of the new video
 OUTPUT_VIDEO = INPUT_VIDEO.with_name(INPUT_VIDEO.stem + '_tracked.mp4')
 
 ## Custom model (fine-tuned elephants)
-MODEL_PATH = Path('./runs/detect/train21/weights/last.pt')
+MODEL_PATH = Path('./runs/detect/train29/weights/last.pt')
 
 CHUNK_SECONDS = 180            # process in N-second chunks
 TARGET_HEIGHT = 720            # resize height (keeps aspect ratio)
