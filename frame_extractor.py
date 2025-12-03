@@ -56,7 +56,7 @@ def frame_feature(img_bgr, prev_gray=None):
     sharp = laplacian_variance(img_bgr)        # scalar
     gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
     delta = grayscale_delta(prev_gray, gray)   # scalar
-    feat = np.concatenate([hist, np.array([sharp, delta], dtype=np.float32)])  # (514,)
+    feat = np.concatenate([hist, np.array([sharp, 20*delta], dtype=np.float32)])  # (514,)
     return feat, gray
 
 def sample_frames(cap, sample_every):
@@ -151,6 +151,7 @@ def select_best_frames_streaming(video_path: Path, sample_every: int, resize_wid
     best = [(np.inf, None, None, None) for _ in range(k)]
 
     prev_gray = None
+    SHARP_THRESHOLD = 0.05
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
     total_samples_est = (frame_count + sample_every - 1) // sample_every if frame_count > 0 else None
 
@@ -159,6 +160,15 @@ def select_best_frames_streaming(video_path: Path, sample_every: int, resize_wid
             # Compute feature on (optionally) downscaled frame to match Pass 1
             small = maybe_resize(frame_full, resize_width)
             feat, prev_gray = frame_feature(small, prev_gray)
+            
+            sharpness_index = 512
+            sharp = feat[sharpness_index]
+
+            if sharp < SHARP_THRESHOLD:
+              # Frame is too blurry/uniform (likely low quality, underwater, or shadow)
+              pbar.update(1)
+              continue # Skip the rest of the loop for this frame
+
             feat = feat.reshape(1, -1).astype(np.float32)
 
             # Assign to nearest centroid; use transform if available, else manual distance
