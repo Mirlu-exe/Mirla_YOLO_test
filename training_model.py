@@ -12,5 +12,4 @@ train_results = model.train(
     device=0,  # Device to run on (e.g., 'cpu', 0, [0,1,2,3]) i use 0 for first available gpu
     batch=8,
     patience=20
-
   )

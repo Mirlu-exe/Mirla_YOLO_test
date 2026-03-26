@@ -27,11 +27,11 @@ INPUT_VIDEO = VIDEOS_DIR / '250825_10session_site1_1.MP4' #name of the new video
 OUTPUT_VIDEO = INPUT_VIDEO.with_name(INPUT_VIDEO.stem + '_tracked.mp4')
 
 ## Custom model (fine-tuned elephants)
-MODEL_PATH = Path('./runs/detect/train36/weights/last.pt')
+MODEL_PATH = Path('./runs/detect/train37/weights/last.pt')
 
 CHUNK_SECONDS = 180            # process in N-second chunks
 TARGET_HEIGHT = 720            # resize height (keeps aspect ratio)
-CONF_THRESHOLD = 0.5
+CONF_THRESHOLD = 0.6
 YOLO_IMG_SIZE = 1280            # YOLO internal inference size
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 FFMPEG = 'ffmpeg'
