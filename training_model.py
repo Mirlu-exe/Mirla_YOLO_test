@@ -27,6 +27,6 @@ train_results = model.train(
     fliplr= 0.5,    # Horizontal flip (left/right). 50% chance per image
 
     mosaic= 0.3,    # Combines 4 images into 1 during training. Very strong augmentation, improves generalization (great for detection, but too much can hurt tracking consistency)
-    mixup= 0.0     # Blends two images together (20% probability). Helps regularization but can make training harder (helps generalization, but can confuse object boundaries)
+    mixup= 0.0,     # Blends two images together (20% probability). Helps regularization but can make training harder (helps generalization, but can confuse object boundaries)
 
   )
