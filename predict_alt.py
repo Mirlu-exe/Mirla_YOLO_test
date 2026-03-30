@@ -3,6 +3,7 @@ import math
 import shutil
 import subprocess
 import tempfile
+import csv
 from pathlib import Path
 
 import cv2
@@ -112,8 +113,9 @@ TRACK_CONF = 0.5
 PERSIST = True  # Keep track IDs across frames
 
 
-def track_and_write(video_path, output_path):
-    """Use YOLOv11 tracking (ByteTrack) to process the video."""
+def track_and_write(video_path, output_path, csv_path, start_time_offset=0.0):
+    """Use YOLOv11 tracking (ByteTrack) and save detections to CSV."""
+
     results = model.track(
         source=str(video_path),
         conf=TRACK_CONF,
@@ -125,17 +127,71 @@ def track_and_write(video_path, output_path):
     )
 
     out_writer = None
-    for result in results:
-        frame = result.plot()  # Draw boxes, labels, and track IDs
-        if out_writer is None:
-            H, W = frame.shape[:2]
-            fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-            out_writer = cv2.VideoWriter(str(output_path), fourcc, fps, (W, H))
-        out_writer.write(frame)
+    frame_idx = 0
+
+    # Open CSV
+    with open(csv_path, mode='a', newline='') as f:
+        writer = csv.writer(f)
+
+        for result in results:
+            frame = result.plot()
+
+            # Initialize video writer
+            if out_writer is None:
+                H, W = frame.shape[:2]
+                fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                out_writer = cv2.VideoWriter(str(output_path), fourcc, fps, (W, H))
+
+            out_writer.write(frame)
+
+            # -----------------------------
+            # Extract detections
+            # -----------------------------
+            if result.boxes is not None:
+                boxes = result.boxes.xyxy.cpu().numpy()
+                confs = result.boxes.conf.cpu().numpy()
+                class_ids = result.boxes.cls.cpu().numpy().astype(int)
+
+                # Track IDs (may be None)
+                track_ids = (
+                    result.boxes.id.cpu().numpy().astype(int)
+                    if result.boxes.id is not None else [-1] * len(boxes)
+                )
+
+                for box, conf, cls_id, track_id in zip(boxes, confs, class_ids, track_ids):
+                    x1, y1, x2, y2 = box
+
+                    time_sec = start_time_offset + (frame_idx / fps)
+
+                    writer.writerow([
+                        frame_idx,
+                        round(time_sec, 3),
+                        track_id,
+                        cls_id,
+                        names[cls_id],
+                        float(conf),
+                        float(x1), float(y1), float(x2), float(y2)
+                    ])
+
+            frame_idx += 1
 
     if out_writer is not None:
         out_writer.release()
 
+CSV_OUTPUT = OUTPUT_VIDEO.with_suffix('.csv')
+
+# Write header once
+with open(CSV_OUTPUT, mode='w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow([
+        "frame",
+        "time_sec",
+        "track_id",
+        "class_id",
+        "class_name",
+        "confidence",
+        "x1", "y1", "x2", "y2"
+    ])
 
 # -----------------------------
 # Chunked tracking + merge
@@ -160,7 +216,12 @@ try:
         make_resized_chunk(INPUT_VIDEO, chunk_path, start, this_len, TARGET_HEIGHT)
 
         tqdm.write(f"[INFO] Tracking chunk {chunk_idx+1}/{num_chunks} ({this_len:.1f}s)")
-        track_and_write(chunk_path, tracked_chunk_path)
+        track_and_write(
+            chunk_path,
+            tracked_chunk_path,
+            CSV_OUTPUT,
+            start_time_offset=start
+        )
 
         try:
             chunk_path.unlink(missing_ok=True)
