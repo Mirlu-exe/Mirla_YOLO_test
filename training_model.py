@@ -11,9 +11,21 @@ train_results = model.train(
     imgsz=1024,
     device=0,  # Device to run on (e.g., 'cpu', 0, [0,1,2,3]) i use 0 for first available gpu
     batch=8,
-    #patience=50,
+    #patience=50
+
+    #------------------------------------------------
+    ##Optimizer config, learning rate config
+    optimizer="AdamW",
+    lr0=0.00095,
+    #warmup_epochs=3,
+    #cos_lr=True,
+    #freeze=23,
+    #seed=0,
+    #pretrained=True,
+    #------------------------------------------------
 
     #data augmentations
+    augment=True,
     hsv_h= 0.005,   # Adjusts hue (color tone). Small changes simulate different lighting/color conditions
     hsv_s= 0.2,  # Adjusts saturation (color intensity). Higher = more vivid or washed-out colors
     hsv_v= 0.1,     # Adjusts brightness (value). Simulates darker/brighter environments

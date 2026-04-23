@@ -28,11 +28,11 @@ INPUT_VIDEO = VIDEOS_DIR / '250825_10session_site1_1.MP4' #name of the new video
 OUTPUT_VIDEO = INPUT_VIDEO.with_name(INPUT_VIDEO.stem + '_tracked.mp4')
 
 ## Custom model (fine-tuned elephants)
-MODEL_PATH = Path('./runs/detect/train43/weights/best.pt')
+MODEL_PATH = Path('./runs/detect/train47/weights/best.pt')
 
 CHUNK_SECONDS = 180            # process in N-second chunks
 TARGET_HEIGHT = 720            # resize height (keeps aspect ratio)
-CONF_THRESHOLD = 0.6
+CONF_THRESHOLD = 0.15
 YOLO_IMG_SIZE = 1280            # YOLO internal inference size
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 FFMPEG = 'ffmpeg'
@@ -103,14 +103,14 @@ model = YOLO(str(MODEL_PATH))
 model.to(DEVICE)
 names = model.names
 
-tqdm.write(f"[INFO] Duration: {duration:.2f}s | FPS: {fps:.3f} | Device: {DEVICE}")
-tqdm.write(f"[INFO] Target height: {TARGET_HEIGHT}px; YOLO imgsz: {YOLO_IMG_SIZE}; conf: {CONF_THRESHOLD}")
-
 # -----------------------------
 # Tracking setup
 # -----------------------------
-TRACK_CONF = 0.5
+
 PERSIST = True  # Keep track IDs across frames
+
+tqdm.write(f"[INFO] Duration: {duration:.2f}s | FPS: {fps:.3f} | Device: {DEVICE}")
+tqdm.write(f"[INFO] Target height: {TARGET_HEIGHT}px; YOLO imgsz: {YOLO_IMG_SIZE}; conf: {CONF_THRESHOLD}")
 
 
 def track_and_write(video_path, output_path, csv_path, start_time_offset=0.0):
@@ -118,12 +118,13 @@ def track_and_write(video_path, output_path, csv_path, start_time_offset=0.0):
 
     results = model.track(
         source=str(video_path),
-        conf=TRACK_CONF,
+        conf=CONF_THRESHOLD,
         imgsz=YOLO_IMG_SIZE,
         device=DEVICE,
         persist=PERSIST,
         stream=True,
-        verbose=False
+        verbose=False,
+        tracker = "custom_bytetrack.yaml"
     )
 
     out_writer = None
